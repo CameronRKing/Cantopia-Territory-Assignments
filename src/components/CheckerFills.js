@@ -16,6 +16,7 @@ function CheckerFills() {
     let patternId = color + "-Checker";
     return (
       <pattern
+        key={patternId}
         id={patternId}
         x="0"
         y="0"

@@ -55,6 +55,7 @@ export const populationData = CountySvgData.reduce(
 export const AppContextObject = {
   selectedSalesperson: 0,
   countyAssignment: emptyCountyAssignmentList,
+  salespeople: []
 };
 
 export const AppContextNew = createContext();

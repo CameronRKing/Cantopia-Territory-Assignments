@@ -1,6 +1,6 @@
 {
   "homepage": "http://richbrett12.github.io/Cantopia-Territory-Assignments",
-  "name": "my-app",
+  "name": "cantopia-territory-assignments",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

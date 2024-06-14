@@ -11,6 +11,7 @@ function SalespersonList({ currentSalespeople, onSalespersonSelect }) {
   const salespeopleList = currentSalespeople.map((name, index) => {
     return (
       <ListItem
+        key={name}
         name={name}
         id={index + 1}
         onButtonClick={onSalespersonSelect}

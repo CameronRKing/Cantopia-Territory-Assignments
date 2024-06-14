@@ -20,6 +20,7 @@ function LineFills() {
     let patternId = color + "-Line";
     return (
       <pattern
+        key={patternId}
         id={patternId}
         x="0"
         y="0"
@@ -32,12 +33,12 @@ function LineFills() {
         <g id="chevron">
           <path
             style={{ fill: color }}
-            class="left"
+            className="left"
             d="M0 0l10 6v10l-10 -6z"
           ></path>
           <path
             style={{ fill: color }}
-            class="right"
+            className="right"
             d="M10 0l-10 6v10l10 -6"
           ></path>
         </g>

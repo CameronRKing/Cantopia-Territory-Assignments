@@ -1,53 +1,71 @@
-import "../App.css";
-import React, { useEffect, useReducer } from "react";
-import OhioSvg from "./Ohio";
-import SalespersonList from "./SalespersonList";
-import Grid from "@mui/material/Unstable_Grid2";
-import { Button } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
-import * as Y from "yjs";
-import { WebrtcProvider } from "y-webrtc";
-
-import { AppContextNew, AppContextObject } from "../data/AppContext";
-import ContextReducer from "../data/ContextReducer";
+import '../App.css';
+import React, { useEffect, useReducer } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Grid from '@mui/material/Unstable_Grid2';
+import { Button } from '@mui/material';
+import * as Y from 'yjs';
+import { WebrtcProvider } from 'y-webrtc';
+import OhioSvg from './Ohio';
+import SalespersonList from './SalespersonList';
+import { AppContextNew, AppContextObject } from '../data/AppContext';
+import ContextReducer from '../data/ContextReducer.ts';
 
 let ydoc = null;
 let provider = null;
+const gasUrl = 'https://script.google.com/macros/s/AKfycbzYOxZEVoqqCzbEdq7pJZL2TPYOqhbqz9njaYUK9AXucP4XJrZt26LqNgQ7u5eO_3sz9A/exec'
+
 
 function TerritoryAssignment({ currentSalespeople }) {
   const [currentState, dispatch] = useReducer(ContextReducer, AppContextObject);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const roomName = searchParams.get("room");
-  const missingRoomName = roomName === null || roomName === "";
+  const roomName = searchParams.get('room');
+  const secret = searchParams.get('secret');
+  const missingRoomName = roomName === null || roomName === '';
 
   useEffect(() => {
-    if (!missingRoomName) {
-      if (!provider || provider.roomName !== roomName) {
-        if (provider) {
-          provider.destroy();
-        }
-        ydoc = new Y.Doc();
-        provider = new WebrtcProvider(roomName, ydoc, {
-          password: "optional-room-password",
-        });
+    if (missingRoomName) return () => {};
+    if (provider && provider.roomName !== roomName) { provider.destroy(); provider = null; }
+    if (!provider) {
+      ydoc = new Y.Doc();
+      provider = new WebrtcProvider(roomName, ydoc, {
+        password: secret,
+        // todo: host a signaling server somewhere
+        // signaling: ['ws://localhost:4444']
+      });
 
-        ydoc.getMap("countyAssignment");
+      ydoc.getMap('countyAssignment');
+      const init = ydoc.getText('initialized');
 
+      if (!init.toString()) {
+        console.log('initializing');
+        init.insert(0, 'true');
+        fetch(`${gasUrl}?action=loadTerritories&docId=${roomName}&companySecret=${secret}`, { })
+          .then(async res => {
+            const body = await res.json();
+            let { Managers, Territories } = body;
+            Managers = JSON.parse(Managers);
+            Territories = JSON.parse(Territories);
+            dispatch({
+              type: 'initialize',
+              ydoc,
+              Managers,
+              Territories
+            });
+          });
+      } else {
         dispatch({
-          type: "syncMapToContext",
-          ydoc: ydoc,
+          type: 'syncMapToContext',
+          ydoc
         });
       }
     }
-
-    return () => {};
-  }, [roomName, missingRoomName]);
+  }, [roomName, missingRoomName, secret]);
 
   if (ydoc) {
-    ydoc.on("update", () => {
+    ydoc.on('update', () => {
       dispatch({
-        type: "syncMapToContext",
+        type: 'syncMapToContext',
         ydoc: ydoc,
       });
     });
@@ -56,12 +74,12 @@ function TerritoryAssignment({ currentSalespeople }) {
   function handleSalespersonSelect(id) {
     if (id !== currentState.selectedSalesperson) {
       dispatch({
-        type: "salespersonSelect",
+        type: 'salespersonSelect',
         id: id,
       });
     } else {
       dispatch({
-        type: "salespersonSelect",
+        type: 'salespersonSelect',
         id: 0,
       });
     }
@@ -69,7 +87,7 @@ function TerritoryAssignment({ currentSalespeople }) {
 
   function handleCountySelect(countyName) {
     dispatch({
-      type: "countySelect",
+      type: 'countySelect',
       countyName: countyName,
       salespersonId: currentState.selectedSalesperson,
       ydoc: ydoc,
@@ -79,13 +97,13 @@ function TerritoryAssignment({ currentSalespeople }) {
   function handleClear(id) {
     if (id) {
       dispatch({
-        type: "clearSelectedSalesperson",
+        type: 'clearSelectedSalesperson',
         idToClear: id,
         ydoc: ydoc,
       });
     } else {
       dispatch({
-        type: "clearAllAssignments",
+        type: 'clearAllAssignments',
         ydoc: ydoc,
       });
     }
@@ -93,7 +111,7 @@ function TerritoryAssignment({ currentSalespeople }) {
 
   function handleRandomFill() {
     dispatch({
-      type: "randomFill",
+      type: 'randomFill',
       ydoc: ydoc,
     });
   }
@@ -104,7 +122,7 @@ function TerritoryAssignment({ currentSalespeople }) {
         <span>
           <h2>Cantopia Territory Assignments!</h2>
           <strong>
-            Provide a Query String for Room Name (Key: "room")
+            Provide a Query String for Room Name (Key: 'room')
             <br />
             <br />
             e.g. (.../Cantopia-Territory-Assignments/?room=
@@ -117,43 +135,43 @@ function TerritoryAssignment({ currentSalespeople }) {
             <strong>Room Name: </strong>
             {roomName}
           </span>
-          <div className="MainContainer">
+          <div className='MainContainer'>
             <Grid container spacing={2}>
               <Grid xs={4}>
                 <SalespersonList
-                  currentSalespeople={currentSalespeople}
+                  currentSalespeople={currentState.salespeople}
                   onSalespersonSelect={handleSalespersonSelect}
                 />
               </Grid>
               <Grid
                 xs={4}
-                display="flex"
-                justifyContent="start"
-                alignItems="start"
+                display='flex'
+                justifyContent='start'
+                alignItems='start'
               >
                 <OhioSvg onCountySelect={handleCountySelect} />
               </Grid>
               <Grid xs={4}></Grid>
 
-              <Grid xs={4} display="flex" justifyContent="space-around">
+              <Grid xs={4} display='flex' justifyContent='space-around'>
                 <Button
-                  size="small"
-                  variant="contained"
+                  size='small'
+                  variant='contained'
                   onClick={handleRandomFill}
                 >
                   Sample Fill
                 </Button>
                 <Button
-                  size="small"
-                  variant="contained"
+                  size='small'
+                  variant='contained'
                   onClick={() => handleClear()}
                 >
                   Clear Map
                 </Button>
                 {currentState.selectedSalesperson === 0 ? (
                   <Button
-                    size="small"
-                    variant="contained"
+                    size='small'
+                    variant='contained'
                     onClick={() =>
                       handleClear(currentState.selectedSalesperson)
                     }
@@ -163,8 +181,8 @@ function TerritoryAssignment({ currentSalespeople }) {
                   </Button>
                 ) : (
                   <Button
-                    className="ActionButtons"
-                    variant="contained"
+                    className='ActionButtons'
+                    variant='contained'
                     onClick={() =>
                       handleClear(currentState.selectedSalesperson)
                     }

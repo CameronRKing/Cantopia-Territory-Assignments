@@ -5,6 +5,7 @@ function CountyList({ onCountySelect }) {
   const OhioSvgPaths = CountySvgData.map((element, index) => {
     return (
       <County
+        key={element.County}
         countyName={element.County}
         d={element.d}
         onCountySelect={onCountySelect}
