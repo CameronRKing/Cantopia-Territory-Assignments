@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
-import { AppContextNew, salespersonColors } from "../../data/AppContext";
-import "./County.css";
+import React, { useContext } from 'react';
+import { AppContextNew, salespersonColors } from '../../data/AppContext';
+import './County.css';
 
 function County({ d, countyName, onCountySelect }) {
   const currentContext = useContext(AppContextNew);
 
-  let assignment = currentContext.countyAssignment[countyName];
-  let fillStyle = {
-    fill: salespersonColors[assignment],
+  const assignment = currentContext.countyAssignment[countyName];
+  const idx = currentContext.salespeople.indexOf(assignment);
+  const fillStyle = {
+    fill: salespersonColors[idx + 1], // the first color in the array is the empty state
   };
 
   function handleClick() {
@@ -18,7 +19,7 @@ function County({ d, countyName, onCountySelect }) {
   return (
     <svg>
       <path
-        className="county"
+        className='county'
         style={fillStyle}
         d={d}
         id={countyName}

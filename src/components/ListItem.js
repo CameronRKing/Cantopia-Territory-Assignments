@@ -17,7 +17,8 @@ function ListItem({ name, id, onButtonClick }) {
   }
 
   const currentContext = useContext(AppContextNew);
-  let color = salespersonColors[id];
+  const idx = currentContext.salespeople.indexOf(name);
+  let color = salespersonColors[idx + 1];
   const mainStyles = {
     width: "100%",
     padding: "10px",

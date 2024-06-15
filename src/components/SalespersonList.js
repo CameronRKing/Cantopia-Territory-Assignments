@@ -7,13 +7,14 @@ import CloseIcon from "@mui/icons-material/Close";
 
 function SalespersonList({ currentSalespeople, onSalespersonSelect }) {
   const currentContext = useContext(AppContextNew);
-  let color = salespersonColors[currentContext.selectedSalesperson];
-  const salespeopleList = currentSalespeople.map((name, index) => {
+  const idx = currentContext.salespeople.indexOf(currentContext.selectedSalesperson);
+  let color = salespersonColors[idx + 1];
+  const salespeopleList = currentSalespeople.map(name => {
     return (
       <ListItem
         key={name}
         name={name}
-        id={index + 1}
+        id={name}
         onButtonClick={onSalespersonSelect}
       />
     );
@@ -30,7 +31,7 @@ function SalespersonList({ currentSalespeople, onSalespersonSelect }) {
           <Grid container spacing={0}>
             <Grid xs={11}>
               <h2>
-                {currentSalespeople[currentContext.selectedSalesperson - 1]}
+                {currentContext.selectedSalesperson}
               </h2>
             </Grid>
             <Grid
