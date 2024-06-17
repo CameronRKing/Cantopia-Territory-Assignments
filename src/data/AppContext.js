@@ -53,6 +53,7 @@ export const populationData = CountySvgData.reduce(
 );
 
 export const AppContextObject = {
+  quarter: '',
   selectedSalesperson: 0,
   countyAssignment: emptyCountyAssignmentList,
   salespeople: []

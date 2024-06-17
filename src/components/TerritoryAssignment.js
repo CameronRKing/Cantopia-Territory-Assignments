@@ -46,6 +46,7 @@ function TerritoryAssignment({ currentSalespeople }) {
             let { Managers, Territories } = body;
             Managers = JSON.parse(Managers);
             Territories = JSON.parse(Territories);
+            
             dispatch({
               type: 'initialize',
               ydoc,
@@ -86,6 +87,11 @@ function TerritoryAssignment({ currentSalespeople }) {
   }
 
   function handleCountySelect(countyName) {
+    fetch(`${gasUrl}?action=saveTerritories&docId=${roomName}&companySecret=${secret}&county=${countyName}&rep=${encodeURIComponent(currentState.selectedSalesperson)}&quarter=${currentState.quarter}`)
+      .then(res => res.text())
+      .then(console.log);
+    // let the async action happen fully async;
+    // it'll take a moment to sync to Coda, but syncing between peers can be immediate
     dispatch({
       type: 'countySelect',
       countyName: countyName,

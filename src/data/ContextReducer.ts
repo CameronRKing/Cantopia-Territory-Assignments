@@ -6,7 +6,7 @@ export default function ContextReducer(context, action) {
   switch (action.type) {
     case 'initialize': {
       const ydoc: Y.Doc = action.ydoc;
-      const { Managers, Territories } = action;
+      const { Managers, Territories, Quarter } = action;
 
       const ca = ydoc.getMap('countyAssignment');
       // set territory assignments
@@ -18,6 +18,8 @@ export default function ContextReducer(context, action) {
         if (!ydoc.getArray('salespeople').length) ydoc.getArray('salespeople').insert(0, Managers.slice());
       });
       context.salespeople = Managers;
+      context.quarter = Territories[0].Quarter;
+      console.log(context.quarter);
 
       return returnContextObject();
     }
@@ -42,7 +44,8 @@ export default function ContextReducer(context, action) {
       return {
         selectedSalesperson: action.id,
         countyAssignment: context.countyAssignment,
-        salespeople: context.salespeople
+        salespeople: context.salespeople,
+        quarter: context.quarter,
       };
     }
     case 'countySelect': {
@@ -104,7 +107,8 @@ export default function ContextReducer(context, action) {
     return {
       selectedSalesperson: context.selectedSalesperson,
       countyAssignment: context.countyAssignment,
-      salespeople: context.salespeople
+      salespeople: context.salespeople,
+      quarter: context.quarter
     };
   }
 }
