@@ -1,5 +1,5 @@
 import '../App.css';
-import React, { useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Button } from '@mui/material';
@@ -15,9 +15,27 @@ let provider = null;
 const gasUrl = 'https://script.google.com/macros/s/AKfycbzYOxZEVoqqCzbEdq7pJZL2TPYOqhbqz9njaYUK9AXucP4XJrZt26LqNgQ7u5eO_3sz9A/exec'
 
 
+function useResolver() {
+  const [prom, setProm] = useState(Promise.resolve());
+  const [resolved, setResolved] = useState(true);
+
+  React.useEffect(() => {
+    setResolved(false);
+    let fn = () => setResolved(true);
+    prom.then(fn);
+    // if the user assigns a lot of territories very quickly,
+    // then state will flicker when each promise resolves
+    // this method *should* cause only the final promise to resolve
+    return () => fn = () => {};
+  }, [prom]);
+
+  return [setProm, resolved];
+}
+
 function TerritoryAssignment({ currentSalespeople }) {
   const [currentState, dispatch] = useReducer(ContextReducer, AppContextObject);
   const [searchParams] = useSearchParams();
+  const [setPromise, resolved] = useResolver();
 
   const roomName = searchParams.get('room');
   const secret = searchParams.get('secret');
@@ -88,9 +106,10 @@ function TerritoryAssignment({ currentSalespeople }) {
 
   function handleCountySelect(countyName) {
     if (currentState.selectedSalesperson === 0) return;
-    fetch(`${gasUrl}?action=saveTerritories&docId=${roomName}&companySecret=${secret}&county=${countyName}&rep=${encodeURIComponent(currentState.selectedSalesperson)}&quarter=${currentState.quarter}`)
+    const res = fetch(`${gasUrl}?action=saveTerritories&docId=${roomName}&companySecret=${secret}&county=${countyName}&rep=${encodeURIComponent(currentState.selectedSalesperson)}&quarter=${currentState.quarter}`)
       .then(res => res.text())
       .then(console.log);
+    setPromise(res);
     // let the async action happen fully async;
     // it'll take a moment to sync to Coda, but syncing between peers can be immediate
     dispatch({
@@ -138,10 +157,6 @@ function TerritoryAssignment({ currentSalespeople }) {
         </span>
       ) : (
         <>
-          <span>
-            <strong>Room Name: </strong>
-            {roomName}
-          </span>
           <div className='MainContainer'>
             <Grid container spacing={2}>
               <Grid xs={4}>
@@ -160,15 +175,10 @@ function TerritoryAssignment({ currentSalespeople }) {
               </Grid>
               <Grid xs={4}></Grid>
 
-              {/* <Grid xs={4} display='flex' justifyContent='start'>
-                <Button
-                  size='small'
-                  variant='contained'
-                  onClick={handleRandomFill}
-                >
-                  Randomize
-                </Button>
-              </Grid> */}
+              <Grid xs={4} display='flex' justifyContent='start'>
+                <div style={{ paddingLeft: '24px' }} />
+                <span style={{fontStyle: 'italic'}}>{ !resolved ? 'Syncing ...' : 'Synced with Coda' }</span>
+              </Grid>
               <Grid xs={4}></Grid>
             </Grid>
           </div>
