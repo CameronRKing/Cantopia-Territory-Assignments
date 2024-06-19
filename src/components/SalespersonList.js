@@ -31,7 +31,7 @@ function SalespersonList({ currentSalespeople, onSalespersonSelect }) {
           <Grid container spacing={0}>
             <Grid xs={11}>
               <h2>
-                {currentContext.selectedSalesperson}
+                {currentContext.selectedSalesperson || 'Unassigned'}
               </h2>
             </Grid>
             <Grid
@@ -72,7 +72,15 @@ function SalespersonList({ currentSalespeople, onSalespersonSelect }) {
         </div>
       )}
 
-      <ul>{salespeopleList}</ul>
+      <ul>
+        <ListItem
+          key={'Unassigned'}
+          name={'Unassigned'}
+          id={''}
+          onButtonClick={onSalespersonSelect}
+        />
+        {salespeopleList}
+      </ul>
     </div>
   );
 }

@@ -159,43 +159,14 @@ function TerritoryAssignment({ currentSalespeople }) {
               </Grid>
               <Grid xs={4}></Grid>
 
-              <Grid xs={4} display='flex' justifyContent='space-around'>
+              <Grid xs={4} display='flex' justifyContent='start'>
                 <Button
                   size='small'
                   variant='contained'
                   onClick={handleRandomFill}
                 >
-                  Sample Fill
+                  Randomize
                 </Button>
-                <Button
-                  size='small'
-                  variant='contained'
-                  onClick={() => handleClear()}
-                >
-                  Clear Map
-                </Button>
-                {currentState.selectedSalesperson === 0 ? (
-                  <Button
-                    size='small'
-                    variant='contained'
-                    onClick={() =>
-                      handleClear(currentState.selectedSalesperson)
-                    }
-                    disabled
-                  >
-                    Clear Current
-                  </Button>
-                ) : (
-                  <Button
-                    className='ActionButtons'
-                    variant='contained'
-                    onClick={() =>
-                      handleClear(currentState.selectedSalesperson)
-                    }
-                  >
-                    Clear Current
-                  </Button>
-                )}
               </Grid>
               <Grid xs={4}></Grid>
             </Grid>
