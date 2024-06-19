@@ -87,6 +87,7 @@ function TerritoryAssignment({ currentSalespeople }) {
   }
 
   function handleCountySelect(countyName) {
+    if (currentState.selectedSalesperson === 0) return;
     fetch(`${gasUrl}?action=saveTerritories&docId=${roomName}&companySecret=${secret}&county=${countyName}&rep=${encodeURIComponent(currentState.selectedSalesperson)}&quarter=${currentState.quarter}`)
       .then(res => res.text())
       .then(console.log);
@@ -100,27 +101,27 @@ function TerritoryAssignment({ currentSalespeople }) {
     });
   }
 
-  function handleClear(id) {
-    if (id) {
-      dispatch({
-        type: 'clearSelectedSalesperson',
-        idToClear: id,
-        ydoc: ydoc,
-      });
-    } else {
-      dispatch({
-        type: 'clearAllAssignments',
-        ydoc: ydoc,
-      });
-    }
-  }
+  // function handleClear(id) {
+  //   if (id) {
+  //     dispatch({
+  //       type: 'clearSelectedSalesperson',
+  //       idToClear: id,
+  //       ydoc: ydoc,
+  //     });
+  //   } else {
+  //     dispatch({
+  //       type: 'clearAllAssignments',
+  //       ydoc: ydoc,
+  //     });
+  //   }
+  // }
 
-  function handleRandomFill() {
-    dispatch({
-      type: 'randomFill',
-      ydoc: ydoc,
-    });
-  }
+  // function handleRandomFill() {
+  //   dispatch({
+  //     type: 'randomFill',
+  //     ydoc: ydoc,
+  //   });
+  // }
 
   return (
     <AppContextNew.Provider value={currentState}>
@@ -159,7 +160,7 @@ function TerritoryAssignment({ currentSalespeople }) {
               </Grid>
               <Grid xs={4}></Grid>
 
-              <Grid xs={4} display='flex' justifyContent='start'>
+              {/* <Grid xs={4} display='flex' justifyContent='start'>
                 <Button
                   size='small'
                   variant='contained'
@@ -167,7 +168,7 @@ function TerritoryAssignment({ currentSalespeople }) {
                 >
                   Randomize
                 </Button>
-              </Grid>
+              </Grid> */}
               <Grid xs={4}></Grid>
             </Grid>
           </div>
