@@ -1,5 +1,4 @@
 import { CountySvgData } from './CountySvgData';
-import { sampleCountyAssignment2 } from './SampleData';
 import * as Y from 'yjs'
 
 export default function ContextReducer(context, action) {
@@ -12,8 +11,8 @@ export default function ContextReducer(context, action) {
       // set territory assignments
       ydoc.transact(() => {
         Territories.forEach(terr => {
-          ca.set(terr.County, terr['Account Manager'] || 0);
-          context.countyAssignment[terr.County] = terr['Account Manager'] || 0;
+          ca.set(terr.County, terr['Account Manager'] || '');
+          context.countyAssignment[terr.County] = terr['Account Manager'] || '';
         });
         if (!ydoc.getArray('salespeople').length) ydoc.getArray('salespeople').insert(0, Managers.slice());
       });
@@ -87,15 +86,7 @@ export default function ContextReducer(context, action) {
       return returnContextObject();
     }
     case 'randomFill': {
-      let countyAssignmentMap = action.ydoc.getMap('countyAssignment');
-      sampleCountyAssignment2.forEach((x) => {
-        if (countyAssignmentMap.get(x.countyName) !== x.salespersonId) {
-          action.ydoc.transact(() => {
-            countyAssignmentMap.set(x.countyName, x.salespersonId);
-          });
-        }
-      });
-
+      // let countyAssignmentMap = action.ydoc.getMap('countyAssignment');
       return returnContextObject();
     }
     default: {

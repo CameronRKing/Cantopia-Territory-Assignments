@@ -9,6 +9,7 @@ import OhioSvg from './Ohio';
 import SalespersonList from './SalespersonList';
 import { AppContextNew, AppContextObject } from '../data/AppContext';
 import ContextReducer from '../data/ContextReducer.ts';
+import Network from '../data/CountyNetwork.ts';
 
 let ydoc = null;
 let provider = null;
@@ -41,6 +42,8 @@ function TerritoryAssignment({ currentSalespeople }) {
   const secret = searchParams.get('secret');
   const missingRoomName = roomName === null || roomName === '';
 
+  window.ca = currentState.countyAssignment;
+  
   useEffect(() => {
     if (missingRoomName) return () => {};
     if (provider && provider.roomName !== roomName) { provider.destroy(); provider = null; }
@@ -105,7 +108,17 @@ function TerritoryAssignment({ currentSalespeople }) {
   }
 
   function handleCountySelect(countyName) {
-    if (currentState.selectedSalesperson === 0) return;
+    const ss = currentState.selectedSalesperson;
+    // empty state (do nothing) is 0; unassigned is represented as ''
+    if (ss === 0) return;
+    // ensure the county is adjacent to an existing territory
+    // or the salesperson has yet to be assigned any county
+    const adjacent = Network[countyName];
+    const ca = currentState.countyAssignment;
+    if (!adjacent.some(county => ca[county] === ss) && Object.values(ca).includes(ss)) {
+      window.alert('Counties in an account manager\'s territory must be adjacent.');
+      return;
+    }
     const res = fetch(`${gasUrl}?action=saveTerritories&docId=${roomName}&companySecret=${secret}&county=${countyName}&rep=${encodeURIComponent(currentState.selectedSalesperson)}&quarter=${currentState.quarter}`)
       .then(res => res.text())
       .then(console.log);
