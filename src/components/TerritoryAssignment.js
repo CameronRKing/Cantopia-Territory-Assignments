@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import Grid from '@mui/material/Unstable_Grid2';
 import { Button } from '@mui/material';
 import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket'
 import { WebrtcProvider } from 'y-webrtc';
 import OhioSvg from './Ohio';
 import SalespersonList from './SalespersonList';
@@ -45,15 +46,20 @@ function TerritoryAssignment({ currentSalespeople }) {
   window.ca = currentState.countyAssignment;
   
   useEffect(() => {
+    console.log(Array.from(searchParams.entries()));
+  }, [searchParams]);
+
+  useEffect(() => {
     if (missingRoomName) return () => {};
     if (provider && provider.roomName !== roomName) { provider.destroy(); provider = null; }
     if (!provider) {
       ydoc = new Y.Doc();
-      provider = new WebrtcProvider(roomName, ydoc, {
-        password: secret,
+      // provider = new WebrtcProvider(roomName, ydoc, {
+        // password: secret,
         // todo: host a signaling server somewhere
         // signaling: ['ws://localhost:4444']
-      });
+      // });
+      provider = new WebsocketProvider('ws://157.230.220.26:1234', `${roomName}-${secret}`, ydoc);
 
       ydoc.getMap('countyAssignment');
       const init = ydoc.getText('initialized');
