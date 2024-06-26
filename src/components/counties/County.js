@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { AppContextNew, salespersonColors } from '../../data/AppContext';
+import { AppContextNew, salespersonColors, populationData } from '../../data/AppContext';
+
 import './County.css';
 
 function County({ d, countyName, onCountySelect }) {
@@ -25,7 +26,7 @@ function County({ d, countyName, onCountySelect }) {
         id={countyName}
         onClick={handleClick}
       >
-        <title>{countyName}</title>
+        <title>{`${countyName}: ${populationData[countyName]} shops`}</title>
       </path>
     </svg>
   );
